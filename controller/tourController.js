@@ -10,6 +10,15 @@ exports.CheckBody = (req, res, next) => {
   next();
 };
 
+// Alias
+
+exports.aliasTopTour = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingAverage,price';
+  req.query.sort = 'name,price,ratingAverage,summary,difficulty';
+  next();
+};
+
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
