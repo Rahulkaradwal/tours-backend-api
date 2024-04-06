@@ -9,6 +9,10 @@ router
   .get(tourController.aliasTopTour, tourController.getAllTours);
 
 router
+  .route('/tour-stats')
+  .get(tourController.getTourStats, tourController.getAllTours);
+
+router
   .route('/')
   .get(tourController.getAllTours)
   .post(tourController.CheckBody, tourController.createTour);

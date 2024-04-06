@@ -107,3 +107,41 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+// Pipelines
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: '$difficulty' },
+          // _id: null,
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingQuantity' },
+          avgRating: { $sum: '$ratingAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tourStats: stats,
+      },
+    });
+  } catch (err) {
+    res.status(401).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
