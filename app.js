@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const AppError = require('./utils/AppError');
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -16,19 +17,13 @@ const userRouter = require('./routes/userRoute');
 app.use('/api/tours', tourRouter);
 app.use('/api/users', userRouter);
 
-app.use('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'fail',
-  //   message: `Can't find the requested url ${req.originalUrl}, please try with correct url`,
-  // });
-  // next();
-
-  const err = new Error(
-    `Can't find the requested url ${req.originalUrl}, please try with correct url`
+app.all('*', (req, res, next) => {
+  next(
+    new AppError(
+      `Can't find the requested url ${req.originalUrl}, please try with correct url`,
+      404
+    )
   );
-  err.status = 'fail';
-  err.statusCode = 404;
-  next(err);
 });
 
 // global error handler middleware
