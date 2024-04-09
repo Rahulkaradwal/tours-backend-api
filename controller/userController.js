@@ -1,29 +1,3 @@
-const User = require('./../models/userModel');
-
-const catchAsync = (fn) => {
-  return (req, res, next) => {
-    fn(req, res, next).catch((err) => next(err));
-  };
-};
-
-// create user
-
-exports.signup = catchAsync(async (req, res) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
-  });
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: newUser,
-    },
-  });
-});
-
 exports.getAllUsers = (req, res) => {
   res.status(200).json({
     totalResults: users.length,
@@ -43,6 +17,22 @@ exports.getUser = (req, res) => {
   }
   res.status(200).json({
     data: { user },
+  });
+};
+
+exports.createUser = (req, res) => {
+  const newId = users[users.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+
+  users.push(newTour);
+
+  fs.writeFile('users-simple.json', JSON.stringify(users), (err) => {
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: newUser,
+      },
+    });
   });
 };
 
