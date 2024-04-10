@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const signToken = require('./../utils/signToken');
@@ -12,7 +11,7 @@ exports.signup = catchAsync(async (req, res) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  const token = jwt.sign(newUser._id);
+  const token = signToken(newUser._id.toString());
 
   res.status(200).json({
     status: 'success',
@@ -33,7 +32,7 @@ exports.login = catchAsync(async (req, res) => {
 
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await user.correctPassowrd(password, user.password))) {
+  if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Password Is Incorrect', 401));
   }
 
