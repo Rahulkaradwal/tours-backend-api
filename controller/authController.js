@@ -3,6 +3,7 @@ const catchAsync = require('./../utils/catchAsync');
 const signToken = require('./../utils/signToken');
 const AppError = require('./../utils/AppError');
 const { promisify } = require('util');
+const jwt = require('jsonwebtoken');
 
 exports.signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
@@ -33,7 +34,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email }).select('+password');
-  const lest = await user.correctPassword(password, user.password);
+
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Password Is Incorrect', 401));
   }
@@ -53,28 +54,36 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
+  console.log('in the proetected route');
   let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+
+    console.log('in the header', token);
   }
   if (!token) {
-    return next(new AppError('You are not Authroized, Pleaase try again', 401));
+    return next(new AppError('You are not Authorized, Please try again', 401));
   }
   // Verify Token
-  const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  let decoded;
+  try {
+    decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  } catch (err) {
+    return next(new AppError('Invalid token, please log in again.', 401));
+  }
 
   // check user still exists
-  const freshUser = await User.findById(decode.id);
+  const freshUser = await User.findById(decoded.id);
   if (!freshUser) {
     return next(
       new AppError('The User belonging to this Token does not exists', 401)
     );
   }
 
-  if (freshUser.changePasswordAfter(decode.iat)) {
+  if (freshUser.changePasswordAfter(decoded.iat)) {
     return next(
       new AppError(
         'User recently changed the password, please login again',
