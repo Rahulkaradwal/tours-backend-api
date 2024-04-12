@@ -54,15 +54,12 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  console.log('in the proetected route');
   let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-
-    console.log('in the header', token);
   }
   if (!token) {
     return next(new AppError('You are not Authorized, Please try again', 401));
@@ -96,3 +93,5 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser;
   next();
 });
+
+// restrict the user
