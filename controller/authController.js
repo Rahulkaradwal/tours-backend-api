@@ -5,6 +5,7 @@ const AppError = require('./../utils/AppError');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('./../utils/email');
+const crypto = require('crypto');
 
 exports.signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
@@ -188,4 +189,36 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   } catch (error) {
     return next(new AppError('Failed to reset password', 500));
   }
+
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
+
+// update current user : password
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id).select('+password');
+
+  if (!user) {
+    return next(new AppError('Not Found', 401));
+  }
+
+  if (!(await user.correctPassword(req.body.passwordConfirm, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = undefined;
+  await user.save();
+
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
 });
