@@ -152,3 +152,40 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
+
+// reset password
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  console.log('in the reset route');
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 401)); // Assuming AppError is a custom error class that handles status codes
+  }
+
+  // Check if passwords match
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new AppError('Passwords do not match', 400)); // Using AppError for consistent error handling
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword; // This might be redundant if your user model handles it internally
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  try {
+    await user.save();
+    res.status(200).send('Password has been reset successfully');
+  } catch (error) {
+    return next(new AppError('Failed to reset password', 500));
+  }
+});
