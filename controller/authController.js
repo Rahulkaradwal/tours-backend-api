@@ -4,6 +4,7 @@ const signToken = require('./../utils/signToken');
 const AppError = require('./../utils/AppError');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('./../utils/email');
 
 exports.signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
@@ -111,3 +112,43 @@ exports.restrictTo = (...roles) => {
 };
 
 // forgot Password
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    // Create a properly structured error, possibly extending error handling to include status codes
+    return next(new AppError('Sorry, no user found', 401)); // Assuming AppError is a custom error class that handles status codes
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false }); // Save the token changes before sending the email
+
+  const resetUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/users/resetPassword/${resetToken}`;
+  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset token (valid for 10 mins)',
+      message,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError(
+        'There was an error sending the email. Try again later.',
+        500
+      )
+    );
+  }
+});
