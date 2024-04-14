@@ -1,3 +1,6 @@
+const catchAsync = require('../utils/catchAsync');
+const User = require('./../models/userModel');
+
 exports.getAllUsers = (req, res) => {
   res.status(200).json({
     totalResults: users.length,
@@ -62,3 +65,33 @@ exports.deleteUser = (req, res) => {
     data: null,
   });
 };
+
+// filter function for updateMe
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  obj.keys(obj).foreach((el) => {
+    if (allowedFields.includes(el)) {
+      newObj[el] = obj[el];
+    }
+  });
+  return newObj;
+};
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(new AppError('You can not update password with this', 401));
+  }
+
+  const filterBody = filterObj(req.body, 'name', 'email');
+
+  const updateUser = await User.findByIdAndUpdate(req.body.id, filterBody, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updateUser,
+    },
+  });
+});
