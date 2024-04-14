@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-// const User = require('./userModel');
+const User = require('./userModel');
 // const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
@@ -59,7 +59,7 @@ const tourSchema = new mongoose.Schema(
     summary: {
       type: String,
       trim: true,
-      required: [true, 'A tour must have a description'],
+      // required: [true, 'A tour must have a description'],
     },
     description: {
       type: String,
@@ -67,7 +67,7 @@ const tourSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, 'A tour must have a cover image'],
+      // required: [true, 'A tour must have a cover image'],
     },
     images: [String],
     createdAt: {
@@ -104,12 +104,13 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-      },
-    ],
+    guides: Array,
+    // guides: [
+    //   {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'User',
+    //   },
+    // ],
   },
   {
     toJSON: { virtuals: true },
@@ -136,6 +137,12 @@ tourSchema.virtual('reviews', {
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+tourSchema.pre('save', async function (next) {
+  const guidePromise = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidePromise);
   next();
 });
 

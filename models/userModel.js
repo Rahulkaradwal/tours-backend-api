@@ -65,6 +65,8 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+// ------Document Queries ---------
+
 // has password if modified
 
 userSchema.pre('save', async function (next) {
