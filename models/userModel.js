@@ -30,10 +30,16 @@ const userSchema = new mongoose.Schema({
   confirmPassword: {
     type: String,
     required: [true, 'Pleaes enter correct Password'],
+    select: false,
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // has password if modified
@@ -88,6 +94,13 @@ userSchema.methods.createPasswordResetToken = function () {
   // sending the un-encrypted token to mail
   return resetToken;
 };
+
+//Delete: for active user or not
+
+userSchema.pre('/^find', function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
