@@ -40,6 +40,29 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  startLocation: {
+    type: {
+      type: String,
+      default: 'Point',
+      enum: ['Point'],
+    },
+    coordinates: Number,
+    address: String,
+    description: String,
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: Number,
+      address: String,
+      description: String,
+      day: Number,
+    },
+  ],
 });
 
 // has password if modified
