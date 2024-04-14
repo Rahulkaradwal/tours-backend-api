@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
+const AppError = require('./../utils/AppError');
 
 exports.getAllUsers = (req, res) => {
   res.status(200).json({
@@ -69,7 +70,7 @@ exports.deleteUser = (req, res) => {
 // filter function for updateMe
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
-  obj.keys(obj).foreach((el) => {
+  Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) {
       newObj[el] = obj[el];
     }
@@ -84,10 +85,12 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   const filterBody = filterObj(req.body, 'name', 'email');
 
-  const updateUser = await User.findByIdAndUpdate(req.body.id, filterBody, {
+  const updateUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
     new: true,
     runValidators: true,
   });
+
+  console.log(updateUser);
   res.status(200).json({
     status: 'success',
     data: {
