@@ -2,17 +2,19 @@ const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
 const AppError = require('./../utils/AppError');
 
-exports.getAllUsers = (req, res) => {
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
+
   res.status(200).json({
     totalResults: users.length,
     data: { users },
   });
-};
+});
 
-exports.getUser = (req, res) => {
+exports.getUser = catchAsync(async (req, res) => {
   const id = req.params.id * 1; // to convert string into number we mulitplied by number
 
-  const user = users.find((el) => el.id === id);
+  const user = User.find((el) => el.id === id);
   if (!user) {
     res.status(404).json({
       status: 'Fail',
@@ -22,7 +24,7 @@ exports.getUser = (req, res) => {
   res.status(200).json({
     data: { user },
   });
-};
+});
 
 exports.createUser = (req, res) => {
   const newId = users[users.length - 1].id + 1;
