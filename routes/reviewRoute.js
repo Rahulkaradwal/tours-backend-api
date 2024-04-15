@@ -4,7 +4,11 @@ const authController = require('./../controller/authController');
 
 const router = express.Router();
 
-router.route('/').get(authController.protect, reviewController.getallReview);
+router
+  .route('/')
+  .get(authController.protect, reviewController.getallReview)
+  .post(authController.protect, reviewController.createReview);
+
 router.route('/:id').get(authController.protect, reviewController.getallReview);
 
 module.exports = router;
