@@ -27,10 +27,12 @@ app.use(express.static(`${__dirname}/public`));
 
 const tourRouter = require('./routes/tourRoute');
 const userRouter = require('./routes/userRoute');
+const reviewRoute = require('./routes/reviewRoute');
 
 app.use('/api', limiter);
 app.use('/api/tours', tourRouter);
 app.use('/api/users', userRouter);
+app.use('/api/reviews', reviewRoute);
 
 app.all('*', (req, res, next) => {
   next(
