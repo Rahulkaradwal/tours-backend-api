@@ -23,7 +23,11 @@ router
 router
   .route('/:id')
   .get(authController.protect, userController.getUser)
-  .patch(authController.protect, userController.updateUser)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    userController.updateUser
+  )
   .delete(authController.protect, userController.deleteUser);
 
 module.exports = router;

@@ -42,19 +42,8 @@ exports.createUser = (req, res) => {
     });
   });
 };
-
-exports.updateUser = (req, res) => {
-  if (req.params.id * 1 > users.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  res.status(200).json({
-    data: { user },
-  });
-};
+// only for admins
+exports.updateUser = factory.updateOne(User);
 
 exports.deleteUser = factory.deleteOne(User);
 

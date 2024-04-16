@@ -7,6 +7,9 @@ const router = express.Router({ mergeParams: true });
 router.route('/').get(reviewController.getallReview);
 
 router.route('/:id').get(authController.protect, reviewController.getallReview);
-router.route('/:id').delete(reviewController.deleteReview);
+router
+  .route('/:id')
+  .patch(reviewController.updateReview)
+  .delete(reviewController.deleteReview);
 
 module.exports = router;
