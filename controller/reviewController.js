@@ -4,14 +4,11 @@ const AppError = require('./../utils/AppError');
 const ApiFeatures = require('./../utils/apiFeatures');
 
 exports.getallReview = catchAsync(async (req, res, next) => {
-  const features = new ApiFeatures(Review.find(), req.query)
-    .filter()
-    .sort()
-    .limiting()
-    .paginate();
-  const reviews = await features.query;
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
+  const reviews = await Review.find(filter);
   res.status(200).json({
-    totalResult: reviews.length,
+    status: 'success',
     data: {
       reviews,
     },
