@@ -27,16 +27,6 @@ exports.aliasTopTour = (req, res, next) => {
   next();
 };
 
-exports.createTour = catchAsync(async (req, res) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
-
 exports.getAllTours = catchAsync(async (req, res) => {
   const features = new ApiFeatures(Tour.find(), req.query)
     .filter()
@@ -59,8 +49,8 @@ exports.getTour = catchAsync(async (req, res) => {
   });
 });
 
+exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
-
 exports.deleteTour = factory.deleteOne(Tour);
 
 // Pipelines
