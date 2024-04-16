@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
 const AppError = require('./../utils/AppError');
+const factory = require('./../controller/handleFactory');
 
 exports.getAllUsers = catchAsync(async (req, res) => {
   const users = await User.find();
@@ -55,19 +56,7 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUser = (req, res) => {
-  if (req.params.id * 1 > users.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
 
 // filter function for updateMe
 const filterObj = (obj, ...allowedFields) => {
