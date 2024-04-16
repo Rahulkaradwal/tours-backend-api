@@ -1,5 +1,6 @@
 const Tour = require('./../models/tourModel');
 const ApiFeatures = require('./../utils/apiFeatures');
+const factory = require('./../controller/handleFactory');
 
 const catchAsync = (fn) => {
   return (req, res, next) => {
@@ -71,13 +72,7 @@ exports.updateTour = catchAsync(async (req, res) => {
   });
 });
 
-exports.deleteTour = catchAsync(async (req, res) => {
-  await Tour.findByIdAndDelete(req.params.id);
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
-});
+exports.deleteTour = factory.deleteOne(Tour);
 
 // Pipelines
 
