@@ -32,8 +32,11 @@ exports.updateOne = (Model) =>
   });
 
 exports.createOne = (Model) =>
-  catchAsync(async (req, res) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
+    if (!doc) {
+      next(new AppError('Could not crete the Document', 401));
+    }
     res.status(201).json({
       status: 'success',
       data: {

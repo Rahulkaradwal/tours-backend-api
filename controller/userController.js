@@ -27,21 +27,8 @@ exports.getUser = catchAsync(async (req, res) => {
   });
 });
 
-exports.createUser = (req, res) => {
-  const newId = users[users.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+exports.createUser = factory.createOne(User);
 
-  users.push(newTour);
-
-  fs.writeFile('users-simple.json', JSON.stringify(users), (err) => {
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: newUser,
-      },
-    });
-  });
-};
 // only for admins
 exports.updateUser = factory.updateOne(User);
 
