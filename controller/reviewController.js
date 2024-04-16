@@ -1,7 +1,6 @@
 const Review = require('./../models/reviewModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/AppError');
-const ApiFeatures = require('./../utils/apiFeatures');
 
 exports.getallReview = catchAsync(async (req, res, next) => {
   let filter = {};
