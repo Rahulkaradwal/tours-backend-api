@@ -12,20 +12,7 @@ exports.getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-exports.getUser = catchAsync(async (req, res) => {
-  const id = req.params.id * 1; // to convert string into number we mulitplied by number
-
-  const user = User.find((el) => el.id === id);
-  if (!user) {
-    res.status(404).json({
-      status: 'Fail',
-      message: 'Invlid ID',
-    });
-  }
-  res.status(200).json({
-    data: { user },
-  });
-});
+exports.getUser = factory.getOne(User);
 
 exports.createUser = factory.createOne(User);
 

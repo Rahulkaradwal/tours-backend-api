@@ -15,17 +15,7 @@ exports.getallReview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getReview = catchAsync(async (req, res, next) => {
-  const review = Review.findById(req.params.id);
-  if (!review) {
-    return next(new AppError('Not found', 401));
-  }
-  res.status(200).json({
-    data: {
-      review,
-    },
-  });
-});
+exports.getReview = factory.getOne(Review, { path: 'guides' });
 
 // exports.createReview = catchAsync(async (req, res, next) => {
 //   console.log('in the create review');
