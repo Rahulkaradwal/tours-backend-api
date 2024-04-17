@@ -27,20 +27,7 @@ exports.aliasTopTour = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res) => {
-  const features = new ApiFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limiting()
-    .paginate();
-  const tours = await features.query;
-  // send result
-  res.status(200).json({
-    totalResults: tours.length,
-    data: { tours },
-  });
-});
-
+exports.getAllTours = factory.getAll(Tour);
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);

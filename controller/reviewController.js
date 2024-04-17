@@ -3,17 +3,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/AppError');
 const factory = require('./../controller/handleFactory');
 
-exports.getallReview = catchAsync(async (req, res, next) => {
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-  const reviews = await Review.find(filter);
-  res.status(200).json({
-    status: 'success',
-    data: {
-      reviews,
-    },
-  });
-});
+exports.getallReview = factory.getAll(Review);
 
 exports.getReview = factory.getOne(Review, { path: 'guides' });
 

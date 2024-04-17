@@ -3,22 +3,11 @@ const User = require('./../models/userModel');
 const AppError = require('./../utils/AppError');
 const factory = require('./../controller/handleFactory');
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    totalResults: users.length,
-    data: { users },
-  });
-});
-
+exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
-
 exports.createUser = factory.createOne(User);
-
 // only for admins
 exports.updateUser = factory.updateOne(User);
-
 exports.deleteUser = factory.deleteOne(User);
 
 // filter function for updateMe
