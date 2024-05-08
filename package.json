@@ -23,8 +23,11 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "author": "rahul karadwal",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": ">=10.0.0"
+  }
 }
