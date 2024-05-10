@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const cors = require('cors');
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -16,6 +17,7 @@ const limiter = rateLimit({
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+app.use(cors());
 
 app.use(helmet());
 app.use(express.json());
