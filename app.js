@@ -14,7 +14,10 @@ app.set('trust proxy', true);
 // CORS should be set up right after initializing express
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://tour-manager-chi.vercel.app'],
+    origin: [
+      'http://localhost:5173',
+      'https://tour-manager-chi.vercel.app/api/',
+    ],
     credentials: true,
     optionsSuccessStatus: 200,
   })
