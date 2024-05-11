@@ -15,6 +15,7 @@ app.set('trust proxy', true);
 app.use(
   cors({
     origin: ['http://localhost:5173', 'https://tour-manager-chi.vercel.app'],
+    credentials: true,
     optionsSuccessStatus: 200,
   })
 );
