@@ -11,23 +11,22 @@ const app = express();
 // Trust the proxy to get the correct client IP
 app.set('trust proxy', true);
 
-// CORS should be set up right after initializing express
-// Enable All CORS Requests
-app.use(
-  cors({
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all methods
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Allow all headers
-    credentials: true, // Enable credentials
-  })
-);
+// CORS configuration to allow all origins and credentials
+const corsOptions = {
+  origin: (origin, callback) => {
+    console.log('Origin of request ' + origin);
+    callback(null, true); // Allow all origins
+  },
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization',
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
 
-// Alternatively, you can use a more simplified version
-app.use(cors());
-// Other middleware
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
 
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
@@ -49,6 +48,13 @@ app.use(express.static(`${__dirname}/public`));
 const tourRouter = require('./routes/tourRoute');
 const userRouter = require('./routes/userRoute');
 const reviewRoute = require('./routes/reviewRoute');
+app.use((req, res, next) => {
+  console.log(
+    'Received ' + req.method + ' request from ' + req.origin + ' for ' + req.url
+  );
+  console.log('Request headers:', req.headers);
+  next();
+});
 
 app.use('/api/tours', tourRouter);
 app.use('/api/users', userRouter);
