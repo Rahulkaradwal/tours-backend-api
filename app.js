@@ -9,19 +9,19 @@ const AppError = require('./utils/AppError');
 
 const app = express();
 // Trust the proxy to get the correct client IP
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 // CORS should be set up right after initializing express
-app.use(
-  cors({
-    origin: [
-      'http://localhost:5173',
-      'https://tour-manager-chi.vercel.app/api/',
-    ],
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       'http://localhost:5173',
+//       'https://tour-manager-chi.vercel.app/api/',
+//     ],
+//     credentials: true,
+//     optionsSuccessStatus: 200,
+//   })
+// );
 // app.use(cors());
 // Other middleware
 if (process.env.NODE_ENV === 'development') {
