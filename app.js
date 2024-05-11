@@ -12,19 +12,17 @@ const app = express();
 app.set('trust proxy', true);
 
 // CORS should be set up right after initializing express
+// Enable All CORS Requests
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'https://tour-manager-chi.vercel.app/api',
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all methods
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Allow all headers
+    credentials: true, // Enable credentials
   })
 );
+
+// Alternatively, you can use a more simplified version
 app.use(cors());
 // Other middleware
 if (process.env.NODE_ENV === 'development') {

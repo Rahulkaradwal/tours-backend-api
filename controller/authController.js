@@ -8,7 +8,6 @@ const sendEmail = require('./../utils/email');
 const crypto = require('crypto');
 
 exports.signup = catchAsync(async (req, res) => {
-  console.log(req.body);
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
