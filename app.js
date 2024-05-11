@@ -8,6 +8,8 @@ const cors = require('cors');
 const AppError = require('./utils/AppError');
 
 const app = express();
+// Trust the proxy to get the correct client IP
+app.set('trust proxy', true);
 
 // CORS should be set up right after initializing express
 app.use(
