@@ -56,44 +56,44 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  // let token;
-  // if (
-  //   req.headers.authorization &&
-  //   req.headers.authorization.startsWith('Bearer')
-  // ) {
-  //   token = req.headers.authorization.split(' ')[1];
-  // }
-  // if (!token) {
-  //   return next(new AppError('You are not Authorized, Please try again', 401));
-  // }
-  // // Verify Token
-  // let decoded;
-  // try {
-  //   decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  // } catch (err) {
-  //   return next(new AppError('Invalid token, please log in again.', 401));
-  // }
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new AppError('You are not Authorized, Please try again', 401));
+  }
+  // Verify Token
+  let decoded;
+  try {
+    decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  } catch (err) {
+    return next(new AppError('Invalid token, please log in again.', 401));
+  }
 
-  // // check user still exists
-  // const freshUser = await User.findById(decoded.id);
-  // if (!freshUser) {
-  //   return next(
-  //     new AppError('The User belonging to this Token does not exists', 401)
-  //   );
-  // }
+  // check user still exists
+  const freshUser = await User.findById(decoded.id);
+  if (!freshUser) {
+    return next(
+      new AppError('The User belonging to this Token does not exists', 401)
+    );
+  }
 
-  // if (freshUser.changePasswordAfter(decoded.iat)) {
-  //   return next(
-  //     new AppError(
-  //       'User recently changed the password, please login again',
-  //       401
-  //     )
-  //   );
-  // }
+  if (freshUser.changePasswordAfter(decoded.iat)) {
+    return next(
+      new AppError(
+        'User recently changed the password, please login again',
+        401
+      )
+    );
+  }
 
-  // // grant access to the user
-  // req.user = freshUser; // storing the user in req.user so that we can use it later
-  req.user = req.user;
+  // grant access to the user
+  req.user = freshUser; // storing the user in req.user so that we can use it later
+  // req.user = req.user;
   next();
 });
 
