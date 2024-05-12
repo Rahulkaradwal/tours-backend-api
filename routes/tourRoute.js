@@ -7,7 +7,6 @@ const reviewRoute = require('./reviewRoute');
 const router = express.Router();
 
 router.use('/:tourId/reviews', reviewRoute);
-router.use(authController.protect);
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTour, tourController.getAllTours);
@@ -16,9 +15,11 @@ router
   .route('/')
   .get(tourController.getAllTours)
   .post(
+    authController.protect,
     authController.restrictTo('admin', 'leaed-guide'),
     tourController.createTour
   );
+router.use(authController.protect);
 
 router
   .route('/tour-stats')
