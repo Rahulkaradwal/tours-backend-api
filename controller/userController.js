@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const User = require('./../models/userModel');
 const AppError = require('./../utils/AppError');
 const factory = require('./../controller/handleFactory');
+const multer = require('multer');
 
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
@@ -9,6 +10,27 @@ exports.createUser = factory.createOne(User);
 // only for admins
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, res, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images', 400), false);
+  }
+};
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadUserPhoto = upload.single('photo');
 
 // filter function for updateMe
 const filterObj = (obj, ...allowedFields) => {

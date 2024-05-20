@@ -13,7 +13,11 @@ router.use(authController.protect); // this will act as middleware route and pro
 // now we dont need to add the protect route in any route
 
 router.patch('/updateMyPassword', authController.updatePassword);
-router.post('/updateMe', userController.updateMe);
+router.post(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.updateMe
+);
 router.delete('/deleteMe', userController.deleteMe);
 router.get('/me', userController.getMe, userController.getUser);
 
