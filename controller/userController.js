@@ -54,7 +54,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError('You can not update password with this', 401));
   }
 
-  const filterBody = filterObj(req.body, 'name', 'email');
+  const filterBody = filterObj(req.body, 'name', 'email', 'photo');
 
   const updateUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
     new: true,
