@@ -33,7 +33,7 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate limiting
 const limiter = rateLimit({
