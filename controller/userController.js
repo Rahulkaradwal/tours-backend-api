@@ -17,7 +17,7 @@ const multerStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+    cb(null, `${req.body.name}-${req.user.id}-${Date.now()}.${ext}`);
   },
 });
 const multerFilter = (req, file, cb) => {
@@ -54,7 +54,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError('You can not update password with this', 401));
   }
 
-  const filterBody = filterObj(req.body, 'name', 'email', 'photo');
+  const filterBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filterBody.photo = req.file.filename;
 
   const updateUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
     new: true,

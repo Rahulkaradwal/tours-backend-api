@@ -1,5 +1,4 @@
 const express = require('express');
-const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -9,12 +8,11 @@ const AppError = require('./utils/AppError');
 
 const app = express();
 // Trust the proxy to get the correct client IP
-app.set('trust proxy', true);
+// app.set('trust proxy', 1);
 
 // CORS configuration to allow all origins and credentials
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log('Origin of request ' + origin);
     callback(null, true); // Allow all origins
   },
   methods: 'GET,POST,PUT,DELETE,OPTIONS',
@@ -48,13 +46,6 @@ app.use(express.static(`${__dirname}/public`));
 const tourRouter = require('./routes/tourRoute');
 const userRouter = require('./routes/userRoute');
 const reviewRoute = require('./routes/reviewRoute');
-app.use((req, res, next) => {
-  console.log(
-    'Received ' + req.method + ' request from ' + req.origin + ' for ' + req.url
-  );
-  console.log('Request headers:', req.headers);
-  next();
-});
 
 app.use('/api/tours', tourRouter);
 app.use('/api/users', userRouter);
