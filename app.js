@@ -5,6 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cors = require('cors');
 const AppError = require('./utils/AppError');
+const path = require('path');
 
 const app = express();
 // Trust the proxy to get the correct client IP
@@ -30,6 +31,9 @@ app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 app.use(mongoSanitize());
 app.use(xss());
+
+// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate limiting
 const limiter = rateLimit({
