@@ -4,6 +4,8 @@ const AppError = require('./../utils/AppError');
 const factory = require('./../controller/handleFactory');
 const multer = require('multer');
 const sharp = require('sharp');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
 
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
@@ -22,7 +24,28 @@ exports.deleteUser = factory.deleteOne(User);
 //   },
 // });
 
-const multerStorage = multer.memoryStorage();
+// const multerStorage = multer.memoryStorage();
+
+const s3 = new asw.S3({
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET_KEY,
+  region: process.env.S3_BUCKET_REGION,
+});
+
+const multerStorage = multerS3({
+  s3,
+  bucket: 'tour-users',
+  metadata: function (req, file, cb) {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      `user-photos/${file.fieldname}-${uniqueSuffix}-${file.originalname}`
+    );
+  },
+});
 
 const multerFilter = (req, file, cb) => {
   // Corrected signature here
