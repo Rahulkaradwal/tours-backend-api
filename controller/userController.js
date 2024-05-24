@@ -14,37 +14,12 @@ exports.createUser = factory.createOne(User);
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
-// const multerStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'public/img/users');
-//   },
-//   filename: (req, file, cb) => {
-//     const ext = file.mimetype.split('/')[1];
-//     cb(null, `${req.body.name}-${req.user.id}-${Date.now()}.${ext}`);
-//   },
-// });
+const multerStorage = multer.memoryStorage();
 
-// const multerStorage = multer.memoryStorage();
-
-const s3 = new asw.S3({
+const s3 = new aws.S3({
   accessKeyId: process.env.S3_ACCESS_KEY,
   secretAccessKey: process.env.S3_SECRET_KEY,
   region: process.env.S3_BUCKET_REGION,
-});
-
-const multerStorage = multerS3({
-  s3,
-  bucket: 'tour-users',
-  metadata: function (req, file, cb) {
-    cb(null, { fieldName: file.fieldname });
-  },
-  key: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      `user-photos/${file.fieldname}-${uniqueSuffix}-${file.originalname}`
-    );
-  },
 });
 
 const multerFilter = (req, file, cb) => {
@@ -60,19 +35,34 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadUserPhoto = upload.single('photo');
 
-// resize the uploaded photo
-
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.filename = `${req.body.name}-${req.user.id}-${Date.now()}.jpeg`;
+  const filename = `${req.body.name}-${req.user.id}-${Date.now()}.jpeg`;
 
-  sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${req.file.filename}`);
-  next();
+  try {
+    const buffer = await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toBuffer();
+
+    const uploadParams = {
+      Bucket: 'tour-users',
+      Key: `user-photos/${filename}`,
+      Body: buffer,
+      ContentType: 'image/jpeg',
+    };
+
+    const data = await s3.upload(uploadParams).promise();
+
+    req.file.filename = filename;
+    req.file.location = data.Location;
+
+    next();
+  } catch (err) {
+    return next(new AppError('Error processing image', 500));
+  }
 };
 
 // filter function for updateMe
@@ -92,12 +82,13 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  // console.log(req.file);
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError('You can not update password with this', 401));
   }
 
   const filterBody = filterObj(req.body, 'name', 'email');
-  if (req.file) filterBody.photo = req.file.filename;
+  if (req.file) filterBody.photo = req.file.location;
 
   const updateUser = await User.findByIdAndUpdate(req.user.id, filterBody, {
     new: true,

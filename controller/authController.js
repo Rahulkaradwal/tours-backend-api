@@ -158,8 +158,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 // reset password
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  console.log('in the reset route');
-
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
