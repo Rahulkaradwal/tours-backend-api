@@ -38,7 +38,7 @@ exports.uploadUserPhoto = upload.single('photo');
 exports.resizeUserPhoto = async (req, res, next) => {
   if (!req.file) return next();
 
-  const filename = `${req.body.name}-${req.user.id}-${Date.now()}.jpeg`;
+  const filename = `${req.body.name}-${Date.now()}.jpeg`;
 
   try {
     const buffer = await sharp(req.file.buffer)
@@ -82,7 +82,6 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  // console.log(req.file);
   if (req.body.password || req.body.passwordConfirm) {
     return next(new AppError('You can not update password with this', 401));
   }
