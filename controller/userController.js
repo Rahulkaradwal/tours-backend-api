@@ -6,6 +6,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
+const { PassThrough } = require('stream');
 
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
@@ -41,11 +42,13 @@ exports.resizeUserPhoto = async (req, res, next) => {
   const filename = `${req.body.name}-${Date.now()}.jpeg`;
 
   try {
-    const buffer = await sharp(req.file.buffer)
+    const passThrough = new PassThrough();
+
+    sharp(req.file.buffer)
       .resize(500, 500)
       .toFormat('jpeg')
-      .jpeg({ quality: 90 })
-      .toBuffer();
+      .jpeg({ quality: 50 })
+      .pipe(passThrough);
 
     const uploadParams = {
       Bucket: 'tour-users',
