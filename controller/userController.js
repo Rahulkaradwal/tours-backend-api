@@ -61,6 +61,8 @@ exports.resizeUserPhoto = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.error('Error processing image:', err); // Detailed error logging
+
     return next(new AppError('Error processing image', 500));
   }
 };
