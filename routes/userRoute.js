@@ -7,7 +7,7 @@ const router = express.Router();
 router.post(
   '/signup',
   userController.uploadUserPhoto,
-  userController.resizeUserPhoto,
+  userController.uploadPhotoToS3,
   authController.signup
 );
 router.post('/login', authController.login);
@@ -21,7 +21,7 @@ router.patch('/updateMyPassword', authController.updatePassword);
 router.post(
   '/updateMe',
   userController.uploadUserPhoto,
-  userController.resizeUserPhoto,
+  userController.uploadPhotoToS3,
   userController.updateMe
 );
 router.delete('/deleteMe', userController.deleteMe);
