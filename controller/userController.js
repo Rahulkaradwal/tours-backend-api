@@ -15,7 +15,6 @@ exports.deleteUser = factory.deleteOne(User);
 
 // filter function for updateMe
 const filterObj = (obj, ...allowedFields) => {
-  console.log('In the filter obj funciton -------------');
   const newObj = {};
   Object.keys(obj).forEach((el) => {
     if (allowedFields.includes(el)) {
@@ -37,7 +36,6 @@ const s3Client = new S3Client({
 });
 
 const multerFilter = (req, file, cb) => {
-  console.log('in the multer filter------------');
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {
@@ -53,31 +51,24 @@ const upload = multer({
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.uploadPhotoToS3 = catchAsync(async (req, res, next) => {
-  console.log('In the upload photo to s3 ----------------');
   if (!req.file) return next();
 
   const filename = `${req.body.name}-${Date.now()}-${req.file.originalname}`;
 
   try {
-    console.log('before upload params --------');
     const uploadParams = {
       Bucket: 'tour-users',
       Key: `user-photos/${filename}`,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
     };
-    console.log('after upload params ---------');
 
     const upload = new Upload({
       client: s3Client,
       params: uploadParams,
     });
 
-    console.log('after uplaod client and params ---------');
-
     const data = await upload.done();
-
-    console.log('after data await ---------');
 
     req.file.filename = filename;
     req.file.location = data.Location;
