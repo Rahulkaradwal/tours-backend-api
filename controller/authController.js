@@ -97,6 +97,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   // grant access to the user
   req.user = freshUser; // storing the user in req.user so that we can use it later
   // req.user = req.user;
+
   next();
 });
 

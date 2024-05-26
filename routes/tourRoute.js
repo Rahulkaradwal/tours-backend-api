@@ -19,6 +19,8 @@ router
     authController.restrictTo('admin', 'leaed-guide'),
     tourController.createTour
   );
+
+// auth Controller
 router.use(authController.protect);
 
 router
@@ -29,7 +31,7 @@ router
   .route('/:id')
   .get(tourController.getTour)
   .patch(
-    authController.restrictTo('admin', 'leaed-guide'),
+    authController.restrictTo('admin', 'lead-guide'),
     tourController.updateTour
   )
   .delete(
