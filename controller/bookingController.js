@@ -5,23 +5,30 @@ const Tour = require('./../models/tourModel');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+  console.log('in the checkout session');
   const tour = await Tour.findById(req.params.tourId);
 
-  stripe.checkout.session.create({
+  const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    success_url: `${req.protocal}://${req.get('host')}/`,
+    success_url: `${req.protocol}://${req.get('host')}/`,
+    cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
     customer_email: req.user.email,
-    client_refrence_id: req.params.tourId,
+    client_reference_id: req.params.tourId,
     line_items: [
       {
-        name: `${tour.name} Tour`,
-        description: tour.summary,
-        // images:,
-        amount: tour.price * 100,
-        currency: 'usd',
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${tour.name} Tour`,
+            description: tour.summary,
+            // images: ['URL of the tour image if available'],
+          },
+          unit_amount: tour.price * 100,
+        },
         quantity: 1,
       },
     ],
+    mode: 'payment',
   });
 
   res.status(200).json({
