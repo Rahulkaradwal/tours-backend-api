@@ -6,6 +6,7 @@ const xss = require('xss-clean');
 const cors = require('cors');
 const AppError = require('./utils/AppError');
 const path = require('path');
+const bookingController = require('./controller/bookingController');
 
 const app = express();
 // Trust the proxy to get the correct client IP
@@ -26,6 +27,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
