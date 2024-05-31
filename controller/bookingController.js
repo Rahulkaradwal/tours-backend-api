@@ -39,9 +39,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     console.error(err);
-    return next(
-      new AppError('There was an error creating the checkout session.', 500)
-    );
+    return next(new AppError(err, 500));
   }
 });
 
