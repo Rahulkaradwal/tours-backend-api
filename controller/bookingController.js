@@ -5,38 +5,42 @@ const Tour = require('../models/tourModel');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
-const frontEndURL = 'http://localhost:5137';
+const frontEndURL = 'http://localhost:5173/';
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    success_url: `${req.protocol}://${frontEndURL}/`,
-    cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
-    customer_email: req.user.email,
-    client_reference_id: req.params.tourId,
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: `${tour.name} Tour`,
-            description: tour.summary,
-            // images: ['URL of the tour image if available'],
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      // success_url: `${req.protocol}://${frontEndURL}/`,
+      success_url: frontEndURL,
+      cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
+      customer_email: req.user.email,
+      client_reference_id: req.params.tourId,
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `${tour.name} Tour`,
+              description: tour.summary,
+              // images: ['URL of the tour image if available'],
+            },
+            unit_amount: tour.price * 100,
           },
-          unit_amount: tour.price * 100,
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    mode: 'payment',
-  });
-
-  res.status(200).json({
-    status: 'success',
-    session,
-  });
+      ],
+      mode: 'payment',
+    });
+    res.status(200).json({
+      status: 'success',
+      session,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 exports.createBookigCheckout = catchAsync(async (req, res, next) => {
