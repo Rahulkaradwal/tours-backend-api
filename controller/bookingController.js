@@ -6,13 +6,15 @@ const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
 const frontEndURL = 'http://localhost:5173/';
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+// const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const stripeSecretKey =
+  'sk_test_51PKq5AACtXlX27RCDKj6vtTLUQHz7CrGNA7LzJlKM9o67eLgQSOuqMLTSwW7mMBqr2NIgeqqkJRz5JKy0klzQOqD00otacr7Ul';
 const stripe = require('stripe')(stripeSecretKey);
 
 exports.sessionTest = catchAsync(async (req, res, next) => {
   res.json({
     mailUsername: process.env.EMAIL_USERNAME,
-    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeSecretKey,
     message: 'Stripe object initialized successfully',
   });
 });
