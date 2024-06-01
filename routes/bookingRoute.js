@@ -10,4 +10,10 @@ router.get(
   bookingController.getCheckoutSession
 );
 
+router.get(
+  '/sessionTest/:tourId',
+  authController.protect,
+  bookingController.sessionTest
+);
+
 module.exports = router;

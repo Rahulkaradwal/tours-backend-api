@@ -9,6 +9,15 @@ const frontEndURL = 'http://localhost:5173/';
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require('stripe')(stripeSecretKey);
 
+exports.sessionTest = catchAsync(async (req, res, next) => {
+  console.log('In the test session');
+  console.log('firstKey', stripeSecretKey, 'second key', stripe);
+  res.json({
+    stripeSecretKey,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+  });
+});
+
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   try {
     const tour = await Tour.findById(req.params.tourId);
