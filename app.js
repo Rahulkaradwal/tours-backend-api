@@ -7,6 +7,7 @@ const cors = require('cors');
 const AppError = require('./utils/AppError');
 const path = require('path');
 const bookingController = require('./controller/bookingController');
+const bodyParser = require('body-parser');
 
 const app = express();
 // Trust the proxy to get the correct client IP
@@ -30,7 +31,7 @@ app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
 
 app.post(
   '/webhook-checkout',
-  express.raw({ type: 'application/json' }),
+  bodyParser.raw({ type: 'application/json' }),
   bookingController.webhookCheckout
 );
 
