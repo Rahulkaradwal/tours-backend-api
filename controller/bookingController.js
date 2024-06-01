@@ -11,6 +11,7 @@ const stripe = require('stripe')(stripeSecretKey);
 
 exports.sessionTest = catchAsync(async (req, res, next) => {
   res.json({
+    mailUsername: process.env.EMAIL_USERNAME,
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     message: 'Stripe object initialized successfully',
   });
