@@ -2,10 +2,12 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const factory = require('../controller/handleFactory');
 const Tour = require('../models/tourModel');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
 const frontEndURL = 'http://localhost:5173/';
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const stripe = require('stripe')(stripeSecretKey);
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   try {
