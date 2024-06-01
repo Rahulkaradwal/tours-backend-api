@@ -6,6 +6,8 @@ const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
 const User = require('../models/userModel');
 const frontEndURL = 'http://localhost:5173/';
+
+const STRIPE_WEBHOOK_SECRET = 'STRIPE_WEBHOOK_SECRET';
 // const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripeSecretKey =
   'sk_test_51PKq5AACtXlX27RCDKj6vtTLUQHz7CrGNA7LzJlKM9o67eLgQSOuqMLTSwW7mMBqr2NIgeqqkJRz5JKy0klzQOqD00otacr7Ul';
@@ -80,7 +82,7 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET
+      STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     console.error('Webhook error:', err);
