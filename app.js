@@ -29,11 +29,11 @@ app.use(cors(corsOptions));
 
 app.options('*', cors(corsOptions)); // Enable pre-flight across-the-board
 
-app.use('/webhook-checkout', bodyParser.raw({ type: '*/*' }));
+// app.use('/webhook-checkout', bodyParser.raw({ type: '*/*' }));
 
 app.post(
   '/webhook-checkout',
-  // bodyParser.raw({ type: 'application/json' }),
+  bodyParser.raw({ type: 'application/json' }),
   bookingController.webhookCheckout
 );
 
