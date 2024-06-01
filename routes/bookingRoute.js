@@ -9,6 +9,7 @@ router.get(
   authController.protect,
   bookingController.getCheckoutSession
 );
+router.get('/my-tours', authController.protect, bookingController.getMyTours);
 
 router.get(
   '/sessionTest/:tourId',

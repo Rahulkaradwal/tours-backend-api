@@ -95,3 +95,20 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
 
   res.status(200).json({ received: true });
 });
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  // all the bookings
+  const bookings = await Booking.findById({ tour: req.user.id });
+  console.log(bookings);
+
+  // find tours with return ids
+  const tourId = bookings.map((val) => val.tour);
+  console.log('Tour ids', tourId);
+  const tours = await Tour.find({ _id: { $in: tourId } });
+
+  console.log('booked tours', tours);
+  res.status(200).json({
+    status: 'success',
+    data: tours,
+  });
+});
