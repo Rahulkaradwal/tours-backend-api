@@ -10,11 +10,9 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require('stripe')(stripeSecretKey);
 
 exports.sessionTest = catchAsync(async (req, res, next) => {
-  console.log('In the test session');
-  console.log('firstKey', stripeSecretKey, 'second key', stripe);
   res.json({
-    stripeSecretKey,
-    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    message: 'Stripe object initialized successfully',
   });
 });
 
